@@ -5,7 +5,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     build-essential \
     pkg-config \
-    lsof wget unzip gawk git \
+    lsof wget unzip gawk git nano \
   && rm -rf /var/lib/apt/lists/*
 
 ENV NODE_VERSION "6.2.2"

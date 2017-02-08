@@ -13,7 +13,9 @@
 
 set -e
 
-if [ "$1" = '/opt/couchdb/bin/couchdb' ]; then
+nohup mongod --dbpath /opt/mongodb_data &
+
+# if [ "$1" = '/opt/couchdb/bin/couchdb' ]; then
 	# we need to set the permissions here because docker mounts volumes as root
 	chown -R couchdb:couchdb /opt/couchdb
 
@@ -52,6 +54,6 @@ if [ "$1" = '/opt/couchdb/bin/couchdb' ]; then
 
 
 	exec gosu couchdb "$@"
-fi
+# fi
 
 exec "$@"

@@ -13,6 +13,7 @@
 # the License.
 
 FROM debian:jessie
+MAINTAINER Duc Nguyen <https://github.com/ngduc>
 
 # Add CouchDB user account
 RUN groupadd -r couchdb && useradd -d /opt/couchdb -g couchdb couchdb
@@ -26,6 +27,7 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends \
     libicu52 \
     libmozjs185-1.0 \
     openssl \
+    lsof wget unzip gawk nano \
   && rm -rf /var/lib/apt/lists/*
 
 # grab gosu for easy step-down from root and tini for signal handling
@@ -44,7 +46,7 @@ RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364
 
 ENV COUCHDB_VERSION 2.0.0
 
-# Download dev dependencies
+# Download CouchDB dev dependencies
 RUN apt-get update -y -qq && apt-get install -y --no-install-recommends \
     apt-transport-https \
     build-essential \
@@ -78,7 +80,6 @@ RUN apt-get update -y -qq && apt-get install -y --no-install-recommends \
     make \
     nodejs \
     perl \
-    lsof wget unzip gawk \
  && apt-get autoremove -y && apt-get clean \
  && apt-get install -y libicu52 --no-install-recommends \
  && rm -rf /var/lib/apt/lists/* /usr/lib/node_modules /usr/src/couchdb*
@@ -86,6 +87,16 @@ RUN apt-get update -y -qq && apt-get install -y --no-install-recommends \
 # Add configuration
 COPY local.ini /opt/couchdb/etc/local.d/
 COPY vm.args /opt/couchdb/etc/
+
+# --------------------- MongoDB installation --------------------- #
+# --- These will install Mongo 2.4.10 (OLD)
+# RUN apt-get update && apt-get install -y mongodb-server
+# RUN mkdir -p /opt/mongodb_data && chown mongodb.mongodb /opt/mongodb_data
+# --- These will install Mongo 3.4.2
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
+RUN echo "deb http://repo.mongodb.org/apt/debian jessie/mongodb-org/3.4 main" | tee /etc/apt/sources.list.d/mongodb-org-3.4.list
+RUN apt-get update && apt-get install -y mongodb-org
+RUN mkdir -p /opt/mongodb_data && chown mongodb.mongodb /opt/mongodb_data
 
 COPY ./docker-entrypoint.sh /
 
@@ -95,7 +106,7 @@ RUN chmod +x /docker-entrypoint.sh \
  && chown -R couchdb:couchdb /opt/couchdb/
 
 WORKDIR /opt/couchdb
-EXPOSE 5984 4369 9100
+EXPOSE 5984 4369 9100 27017 28017
 VOLUME ["/opt/couchdb/data"]
 
 ENTRYPOINT ["tini", "--", "/docker-entrypoint.sh"]
