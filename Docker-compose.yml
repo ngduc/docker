@@ -1,0 +1,15 @@
+
+# Copy this file "Docker-compose.yml" to /work directory to use ngduc/node Docker Container as a Dev Container.
+# RUN:  docker-compose run --rm web
+
+version: "3.9"  # optional since v1.27.0
+services:
+  web:
+    # build: .
+    image: ngduc/node
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/work
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t

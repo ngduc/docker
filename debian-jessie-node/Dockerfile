@@ -2,10 +2,9 @@ FROM debian:jessie
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
-    curl \
     build-essential \
     pkg-config \
-    lsof wget unzip gawk git nano \
+    lsof curl wget unzip gawk git nano \
   && rm -rf /var/lib/apt/lists/*
 
 ENV NODE_VERSION "6.2.2"

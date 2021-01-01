@@ -1,0 +1,11 @@
+version: "3.9"  # optional since v1.27.0
+services:
+  web:
+    # build: .
+    image: ngduc/node
+    ports:
+      - "3030:3030"
+    volumes:
+      - .:/work
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
